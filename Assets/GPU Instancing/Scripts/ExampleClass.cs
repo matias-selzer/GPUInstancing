@@ -6,6 +6,7 @@ public class ExampleClass : MonoBehaviour {
     public Mesh instanceMesh;
     public Material instanceMaterial;
     public int subMeshIndex = 0;
+    public Vector3 maxPos;
 
     private int cachedInstanceCount = -1;
     private int cachedSubMeshIndex = -1;
@@ -27,7 +28,23 @@ public class ExampleClass : MonoBehaviour {
         Graphics.DrawMeshInstancedIndirect(instanceMesh, subMeshIndex, instanceMaterial, new Bounds(Vector3.zero, new Vector3(100.0f, 100.0f, 100.0f)), argsBuffer);
     }
 
-   
+    void DonnutPosition(Vector4[] positions) {
+        for (int i = 0; i < instanceCount; i++) {
+            float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
+            float distance = Random.Range(20.0f, 100.0f);
+            float height = Random.Range(-2.0f, 2.0f);
+            float size = Random.Range(0.05f, 0.25f);
+            positions[i] = new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
+        }
+    }
+
+    void TestPositions(Vector4[] positions) {
+
+        for (int i = 0; i < instanceCount; i++) {
+            Vector3 p = new Vector3(Random.Range(-maxPos.x, maxPos.x), Random.Range(-maxPos.y, maxPos.y), Random.Range(-maxPos.z, maxPos.z));
+            positions[i] = new Vector4(p.x,p.y,p.z,1);
+        }
+    }
 
     void UpdateBuffers() {
         // Ensure submesh index is in range
@@ -39,13 +56,10 @@ public class ExampleClass : MonoBehaviour {
             positionBuffer.Release();
         positionBuffer = new ComputeBuffer(instanceCount, 16);
         Vector4[] positions = new Vector4[instanceCount];
-        for (int i = 0; i < instanceCount; i++) {
-            float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
-            float distance = Random.Range(20.0f, 100.0f);
-            float height = Random.Range(-2.0f, 2.0f);
-            float size = Random.Range(0.05f, 0.25f);
-            positions[i] = new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
-        }
+
+        //DonnutPosition(positions);
+        TestPositions(positions);
+
         positionBuffer.SetData(positions);
         instanceMaterial.SetBuffer("positionBuffer", positionBuffer);
 
