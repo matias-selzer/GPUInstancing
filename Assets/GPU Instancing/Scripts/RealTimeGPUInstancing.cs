@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ExampleClass : MonoBehaviour {
+public class RealTimeGPUInstancing : MonoBehaviour {
     public int instanceCount = 100000;
     public Mesh instanceMesh;
     public Material instanceMaterial;
